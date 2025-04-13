@@ -255,7 +255,14 @@ const TaskList = () => {
                                             date.setDate(startDate.getDate() + i);
                                             const displayDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
                                             const storageDate = date.toISOString().split('T')[0];
-                                            const tasksForDate = applyFilters().filter(task => task.dueDate === storageDate);
+                                            const taskMap = new Map();
+applyFilters().forEach(task => {
+    if (task.dueDate === storageDate && !taskMap.has(task.title)) {
+        taskMap.set(task.title, task);
+    }
+});
+const tasksForDate = Array.from(taskMap.values());
+
                                             const today = new Date();
                                             today.setHours(0, 0, 0, 0);
                                             const isOverdue = date < today;
