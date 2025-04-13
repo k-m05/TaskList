@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+        <link rel="stylesheet" href="list-style.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <title>Task Statistics</title>
+    </head>
+    <body>
+        <div class="accordion-body">
+            <div class="accordion">
+                <button id="return">&larr; Return to Task list</button>
+                <h1>Task Statistics</h1>
+                <div id="completed-pending-container">
+                    <p id="completed-count">Completed Tasks: 0</p>
+                    <p id="pending-count">Pending Tasks: 0</p>
+                </div>
+                <div id="chart">
+                    <canvas id="taskChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById('return').addEventListener('click', function () {
+                window.location.href = '/';
+            });
+
+            const tasks = JSON.parse(localStorage.getItem("allTasks")) || [];
+            const completedTasks = tasks.filter(task => task.status === "completed").length;
+            const pendingTasks = tasks.filter(task => task.status !== "completed").length;
+
+            document.getElementById("completed-count").textContent = `Completed Tasks: ${completedTasks}`;
+            document.getElementById("pending-count").textContent = `Pending Tasks: ${pendingTasks}`;
+
+            const taskPriorities = ['high', 'medium', 'low'];
+            const taskCounts = taskPriorities.map(priority => {
+                return tasks.filter(task => task.priority === priority).length;
+            });
+            
+            const ctx = document.getElementById('taskChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: taskPriorities,
+                    datasets: [{
+                        label: 'Tasks by Priority',
+                        data: taskCounts,
+                        backgroundColor: ['#FF5733', '#FFC300', '#28A745'],
+                        borderColor: ['#C70039', '#FF5733', '#155724'],
+                        borderWidth: 1
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

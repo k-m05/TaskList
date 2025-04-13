@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="list-style.css">
+        <title>High Priority Tasks</title>
+    </head>
+    <body>
+        <div class="accordion-body">
+            <div class="accordion">
+                <button id="return">&larr; Return to Task List</button>
+                <h1>High Priority Tasks</h1>
+                <p id="no-tasks-message" style="display: none;">No High Priority Tasks Available.</p>
+                <ul id="highPriority-list"></ul>
+            </div>
+        </div>
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const taskList = document.getElementById("highPriority-list");
+            const returnButton = document.getElementById('return');
+            const tasks = JSON.parse(localStorage.getItem("allTasks")) || [];
+            const highPriorityTasks = tasks.filter(task => task.priority === 'high');
+
+            returnButton.addEventListener("click", function () {
+                window.location.href = "/";
+            });
+
+            if (highPriorityTasks.length === 0) {
+                document.getElementById("no-tasks-message").style.display = "block";
+            }
+
+            highPriorityTasks.forEach(task => {
+                const li = document.createElement("li");
+                li.textContent = `${task.title} - Due: ${task.dueDate || 'N/A'}`;
+                li.classList.add("task-entry");
+
+                li.addEventListener("click", () => {
+                    const taskDetails = {
+                        id: task.id,
+                        title: task.title,
+                        priority: task.priority,
+                        status: task.status,
+                        dueDate: task.dueDate
+                    };
+            
+                    localStorage.setItem("selectedTaskId", task.id);
+                    window.location.href = "task-details.html";
+                });
+
+                taskList.appendChild(li);
+            });
+        });
+        </script>
+    </body>
+</html>
