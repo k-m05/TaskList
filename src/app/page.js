@@ -23,11 +23,11 @@ const TaskList = () => {
         'grass maintenance': '#FFC107',
         'general maintenance': '#9C27B0',
     };
-
+    
     function generateDates(startDate) {
         const newTasks = [];
         const existingKeys = new Set(allTasks.map(task => `${task.title}-${task.dueDate}`));
-
+        
         for (let i = 0; i < 7; i++) {
             const date = new Date(startDate);
             date.setDate(startDate.getDate() + i);
@@ -56,12 +56,12 @@ const TaskList = () => {
                 }
             }
         }
-
+        
         if (newTasks.length > 0) {
             setAllTasks(prev => [...prev, ...newTasks]);
         }
     }
-
+    
     useEffect(() => {
         const storedTasks = JSON.parse(localStorage.getItem('allTasks')) || [];
         setAllTasks(storedTasks);
@@ -167,18 +167,13 @@ const TaskList = () => {
         const absY = Math.abs(diffY);
     
         if (absX > absY) {
-            // Horizontal swipe
             if (diffX > 50) {
-                // Swipe Left → Navigate to completed.html
                 window.location.href = 'completed.html';
             } else if (diffX < -50) {
-                // Swipe Right → Navigate to high-priority.html
                 window.location.href = 'high-priority.html';
             }
         } else {
-            // Vertical swipe
             if (diffY > 50) {
-                // Swipe Up → Next week
                 setStartDate(prevDate => {
                     const newDate = new Date(prevDate);
                     newDate.setDate(newDate.getDate() + 7);
@@ -186,7 +181,6 @@ const TaskList = () => {
                     return newDate;
                 });
             } else if (diffY < -50) {
-                // Swipe Down → Previous week
                 setStartDate(prevDate => {
                     const newDate = new Date(prevDate);
                     newDate.setDate(newDate.getDate() - 7);
@@ -196,7 +190,6 @@ const TaskList = () => {
             }
         }
     };
-    
     
     return (
     <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
@@ -244,67 +237,66 @@ const TaskList = () => {
                                             </span>
                                             </li>
                                         ))}
-                                        </ul>
-                                        </div>
-                                    )}
-                                    </div>
-                                    
-                                    <div className="dates">
-                                        {Array.from({ length: 7 }, (_, i) => {
-                                            let date = new Date(startDate);
-                                            date.setDate(startDate.getDate() + i);
-                                            const displayDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                                            const storageDate = date.toISOString().split('T')[0];
-                                            const taskMap = new Map();
-applyFilters().forEach(task => {
-    if (task.dueDate === storageDate && !taskMap.has(task.title)) {
-        taskMap.set(task.title, task);
-    }
-});
-const tasksForDate = Array.from(taskMap.values());
-
-                                            const today = new Date();
-                                            today.setHours(0, 0, 0, 0);
-                                            const isOverdue = date < today;
-                                            
-                                            return (
-                                <div key={storageDate} className={`date-item ${isOverdue ? 'overdue' : ''}`} onClick={() => handleDateClick(storageDate)}>
-                                    {displayDate}
-                                    <div className="task-content" id={`task-content-${storageDate}`}>
-                                        <ul>
-                                            {tasksForDate.map((task) => {
-                                                const categoryColor = categoryColors[task.category.toLowerCase()] || 'gray';
-                                                return (
-                                                    <li
-                                                        key={task.id}
-                                                        id={task.id}
-                                                        className="task-item"
-                                                        draggable
-                                                        onDragStart={(e) => handleDragStart(e, task.id)}
-                                                        onDragOver={handleDragOver}
-                                                        onDrop={(e) => handleDrop(e, task.id, tasksForDate)}
-                                                        style={{ marginBottom: '5px' }}
-                                                        onClick={() => {
-                                                            localStorage.setItem('selectedTaskId', task.id);
-                                                            alert(`Redirecting to Task Details Page for: ${task.title}`);
-                                                            window.location.href = 'task-details.html';
-                                                        }}
-                                                    >
-                                                        <span style={{ backgroundColor: categoryColor, color: 'white', padding: '0.2em 0.5em', borderRadius: '5px', marginRight: '5px' }}>
-                                                            {task.title}
-                                                        </span>
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                            </ul>
+                        </div>
+                    )}
+                </div>
+                
+                <div className="dates">
+                    {Array.from({ length: 7 }, (_, i) => {
+                        let date = new Date(startDate);
+                        date.setDate(startDate.getDate() + i);
+                        const displayDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                        const storageDate = date.toISOString().split('T')[0];
+                        const taskMap = new Map();
+                        applyFilters().forEach(task => {
+                            if (task.dueDate === storageDate && !taskMap.has(task.title)) {
+                                taskMap.set(task.title, task);
+                            }
+                        });
+                        const tasksForDate = Array.from(taskMap.values());
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const isOverdue = date < today;
+                        
+                        return (
+                        <div key={storageDate} className={`date-item ${isOverdue ? 'overdue' : ''}`} onClick={() => handleDateClick(storageDate)}>
+                            {displayDate}
+                            <div className="task-content" id={`task-content-${storageDate}`}>
+                                <ul>
+                                    {tasksForDate.map((task) => {
+                                        const categoryColor = categoryColors[task.category.toLowerCase()] || 'gray';
+                                        return (
+                                        <li
+                                        key={task.id}
+                                        id={task.id}
+                                        className="task-item"
+                                        draggable
+                                        onDragStart={(e) => handleDragStart(e, task.id)}
+                                        onDragOver={handleDragOver}
+                                        onDrop={(e) => handleDrop(e, task.id, tasksForDate)}
+                                        style={{ marginBottom: '5px' }}
+                                        onClick={() => {
+                                        localStorage.setItem('selectedTaskId', task.id);
+                                        alert(`Redirecting to Task Details Page for: ${task.title}`);
+                                        window.location.href = 'task-details.html';
+                                    }}
+                                    >
+                                        <span style={{ backgroundColor: categoryColor, color: 'white', padding: '0.2em 0.5em', borderRadius: '5px', marginRight: '5px' }}>
+                                            {task.title}
+                                        </span>
+                                        </li>
+                                        );
+                                    })}
+                                </ul>
+                            </div>
+                        </div>
+                    );
+                })}
+                </div>
                 </div>
             </div>
-        </div>
+    </div>
     );
 };
 
